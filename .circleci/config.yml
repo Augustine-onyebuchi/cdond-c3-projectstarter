@@ -209,7 +209,9 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}      
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+          
+             
 
   configure-infrastructure:
     docker:
@@ -218,7 +220,7 @@ jobs:
       - checkout
       - add_ssh_keys:
               # You can get this ID in the section where you registered the SSH Key
-              fingerprints: ["c5:6a:61:e4:a3:9c:d0:db:ad:39:c6:35:b3:65:6b:eb"] 
+              fingerprints: ["95:53:e2:f7:00:19:15:e6:17:d5:9f:62:7e:bc:21:e1"] 
       - attach_workspace:
           at: ~/
       # Checkout code from git
@@ -313,7 +315,7 @@ jobs:
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 cp dist s3://udapeople4058-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment:
           workflow_id:
                 ${CIRCLE_WORKFLOW_ID:0:7}
@@ -326,7 +328,7 @@ jobs:
         - checkout
         - add_ssh_keys:
                 # You can get this ID in the section where you registered the SSH Key
-                fingerprints: ["c5:6a:61:e4:a3:9c:d0:db:ad:39:c6:35:b3:65:6b:eb"] 
+                fingerprints: ["95:53:e2:f7:00:19:15:e6:17:d5:9f:62:7e:bc:21:e1"] 
         - attach_workspace:
             at: ~/
       # Checkout code from git
