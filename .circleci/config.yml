@@ -210,8 +210,8 @@ jobs:
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
-          
-             
+
+
 
   configure-infrastructure:
     docker:
@@ -235,7 +235,7 @@ jobs:
           name: Configure server
           command: |
                 cd .circleci/ansible
-                ansible-playbook -i  ~/inventory.txt configure-server.yml
+                ansible-playbook -i  inventory.txt configure-server.yml
                 cat ~/inventory.txt
           no_output_timeout: 30m
       - destroy-environment:
