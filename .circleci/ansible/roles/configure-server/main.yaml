@@ -1,0 +1,22 @@
+---
+- name: "update apt packages."
+  become: true
+  apt:
+    update_cache: yes
+
+- name: "upgrade packages"
+  become: true
+  apt:
+    upgrade: yes
+
+- name: "Install dependencies"
+  become: true
+  apt:
+    name:
+      - nodejs
+      - npm
+      - python3
+      
+- name: "Install pm2"
+  become: true
+  shell: npm install pm2 -g
