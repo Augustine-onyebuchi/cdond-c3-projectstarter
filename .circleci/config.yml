@@ -220,7 +220,7 @@ jobs:
       - checkout
       - add_ssh_keys:
               # You can get this ID in the section where you registered the SSH Key
-              fingerprints: ["95:53:e2:f7:00:19:15:e6:17:d5:9f:62:7e:bc:21:e1"] 
+              fingerprints: ["61:f7:35:db:05:5c:8b:84:85:43:dd:e1:98:b1:dd:5d"] 
       - attach_workspace:
           at: ~/
       # Checkout code from git
@@ -238,130 +238,130 @@ jobs:
                 ansible-playbook -i  inventory.txt configure-server.yml
                
         
-      - destroy-environment:
-          workflow_id:
-                ${CIRCLE_WORKFLOW_ID:0:7}
+      # - destroy-environment:
+      #     workflow_id:
+      #           ${CIRCLE_WORKFLOW_ID:0:7}
       # Here's where you will add some code to rollback on failure      
 
-  run-migrations:
-    docker: 
-      - image: circleci/node:13.8.0
-      # Docker image here that supports NodeJS
-    steps:
-      # Checkout code from git
-      - run:
-          name: Install dependencies
-          command: |
-            sudo apt update
-            sudo apt upgrade
-            sudo apt install awscli
-      - checkout
-      - create-dotenv
-      - restore_cache:
-          keys: [backend-build]
-      - run:
-          name: Run migrations
-          command: |
-            # Your code here
-            cd backend
-            npm install
-            sudo npm install -g npm
-            # Run and save the migration output
-            npm run migrations > migrations_dump.txt
-            ls
-            cat migrations_dump.txt
-      - run:
-          name: Send migration results to kvdb
-          command: |
-              echo ${CIRCLE_WORKFLOW_ID:0:7}
-              if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
-              then
-              curl https://kvdb.io/6YVb82cT8ru7BMuKPGtVpt/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-              fi
-      - destroy-environment:
-          workflow_id:
-                ${CIRCLE_WORKFLOW_ID:0:7}
-     # Here's where you will add some code to rollback on failure      
+  # run-migrations:
+  #   docker: 
+  #     - image: circleci/node:13.8.0
+  #     # Docker image here that supports NodeJS
+  #   steps:
+  #     # Checkout code from git
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           sudo apt update
+  #           sudo apt upgrade
+  #           sudo apt install awscli
+  #     - checkout
+  #     - create-dotenv
+  #     - restore_cache:
+  #         keys: [backend-build]
+  #     - run:
+  #         name: Run migrations
+  #         command: |
+  #           # Your code here
+  #           cd backend
+  #           npm install
+  #           sudo npm install -g npm
+  #           # Run and save the migration output
+  #           npm run migrations > migrations_dump.txt
+  #           ls
+  #           cat migrations_dump.txt
+  #     - run:
+  #         name: Send migration results to kvdb
+  #         command: |
+  #             echo ${CIRCLE_WORKFLOW_ID:0:7}
+  #             if grep -q "has been executed successfully" ~/project/backend/migrations_dump.txt
+  #             then
+  #             curl https://kvdb.io/6YVb82cT8ru7BMuKPGtVpt/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+  #             fi
+  #     - destroy-environment:
+  #         workflow_id:
+  #               ${CIRCLE_WORKFLOW_ID:0:7}
+  #    # Here's where you will add some code to rollback on failure      
 
-  deploy-frontend:
-    docker:
-      - image: circleci/node:13.8.0
-      # Docker image here that supports AWS CLI
-    steps:
-      # Checkout code from git
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            # your code here
-            sudo apt update
-            sudo apt upgrade
-            sudo apt install awscli
-      - run:
-          name: Get backend url
-          command: |
-            # your code here
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
-                     --filter "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL = ${API_URL}"
-            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
-            cat frontend/.env
-      - run:
-          name: Deploy frontend objects
-          command: |
-            # your code here
-            cd frontend
-            npm install
-            npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            aws s3 cp dist s3://udapeople4058-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-      - destroy-environment:
-          workflow_id:
-                ${CIRCLE_WORKFLOW_ID:0:7}
-      # Here's where you will add some code to rollback on failure      
+  # deploy-frontend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #     # Docker image here that supports AWS CLI
+  #   steps:
+  #     # Checkout code from git
+  #     - checkout
+  #     - run:
+  #         name: Install dependencies
+  #         command: |
+  #           # your code here
+  #           sudo apt update
+  #           sudo apt upgrade
+  #           sudo apt install awscli
+  #     - run:
+  #         name: Get backend url
+  #         command: |
+  #           # your code here
+  #           export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' \
+  #                    --filter "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
+  #           export API_URL="http://${BACKEND_IP}:3030"
+  #           echo "API_URL = ${API_URL}"
+  #           echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+  #           cat frontend/.env
+  #     - run:
+  #         name: Deploy frontend objects
+  #         command: |
+  #           # your code here
+  #           cd frontend
+  #           npm install
+  #           npm run build
+  #           tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+  #           aws s3 cp dist s3://udapeople4058-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+  #     - destroy-environment:
+  #         workflow_id:
+  #               ${CIRCLE_WORKFLOW_ID:0:7}
+  #     # Here's where you will add some code to rollback on failure      
                     
-  deploy-backend:
-    docker:
-       - image: python:3.7-alpine3.11 
-    steps:
-        - checkout
-        - add_ssh_keys:
-                # You can get this ID in the section where you registered the SSH Key
-                fingerprints: ["95:53:e2:f7:00:19:15:e6:17:d5:9f:62:7e:bc:21:e1"] 
-        - attach_workspace:
-            at: ~/
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
-        - create-dotenv
-        - run:
-            name: Install dependencies
-            command: |
-              # your code here
-              apk add --update --no-cache openssh ansible tar gzip nodejs npm
-              pip3 install awscli 
-              rm -rf /var/cache/apk/*
-        - run:
-            name: Deploy backend
-            command: |
-              # your code here
-              cd backend
-              npm i
-              npm run build
-              cd ..
-              # Zip the directory
-              tar -C backend -czvf artifact.tar.gz .
-              ls
-              mv artifact.tar.gz .circleci/ansible/
-              cd .circleci/ansible/
-              echo "Contents  of the inventory.txt file is -------"
-              cat ~/inventory.txt
-              ansible-playbook -i ~/inventory.txt deploy-backend.yml
-      # Here's where you will add some code to rollback on failure
-        - destroy-environment:
-            workflow_id:
-                  ${CIRCLE_WORKFLOW_ID:0:7} 
+  # deploy-backend:
+  #   docker:
+  #      - image: python:3.7-alpine3.11 
+  #   steps:
+  #       - checkout
+  #       - add_ssh_keys:
+  #               # You can get this ID in the section where you registered the SSH Key
+  #               fingerprints: ["95:53:e2:f7:00:19:15:e6:17:d5:9f:62:7e:bc:21:e1"] 
+  #       - attach_workspace:
+  #           at: ~/
+  #     # Checkout code from git
+  #     # Add ssh keys with fingerprint
+  #     # attach workspace
+  #       - create-dotenv
+  #       - run:
+  #           name: Install dependencies
+  #           command: |
+  #             # your code here
+  #             apk add --update --no-cache openssh ansible tar gzip nodejs npm
+  #             pip3 install awscli 
+  #             rm -rf /var/cache/apk/*
+  #       - run:
+  #           name: Deploy backend
+  #           command: |
+  #             # your code here
+  #             cd backend
+  #             npm i
+  #             npm run build
+  #             cd ..
+  #             # Zip the directory
+  #             tar -C backend -czvf artifact.tar.gz .
+  #             ls
+  #             mv artifact.tar.gz .circleci/ansible/
+  #             cd .circleci/ansible/
+  #             echo "Contents  of the inventory.txt file is -------"
+  #             cat ~/inventory.txt
+  #             ansible-playbook -i ~/inventory.txt deploy-backend.yml
+  #     # Here's where you will add some code to rollback on failure
+  #       - destroy-environment:
+  #           workflow_id:
+  #                 ${CIRCLE_WORKFLOW_ID:0:7} 
 
 #   smoke-test:
 #     docker:
@@ -441,12 +441,12 @@ workflows:
               only: [master]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
 #       - smoke-test:
 #           requires: [deploy-backend, deploy-frontend]
 #       - cloudfront-update:
