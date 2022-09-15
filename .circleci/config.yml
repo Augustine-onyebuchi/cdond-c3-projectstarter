@@ -221,8 +221,7 @@ jobs:
       - add_ssh_keys:
               # You can get this ID in the section where you registered the SSH Key
           fingerprints: ["61:f7:35:db:05:5c:8b:84:85:43:dd:e1:98:b1:dd:5d"] 
-      - attach_workspace:
-          at: ~/
+      
       # Checkout code from git
       # Add ssh keys with fingerprint
       # attach workspace
@@ -230,7 +229,9 @@ jobs:
           name: Install dependencies
           command: |
               apk add --update tar gzip ansible
-              pip3 install awscli 
+              pip3 install awscli
+      - attach_workspace:
+          at: ~/ 
       - run:
           name: Configure server
           command: |
