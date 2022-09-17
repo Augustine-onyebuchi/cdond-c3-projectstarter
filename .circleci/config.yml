@@ -260,7 +260,7 @@ jobs:
       - create-dotenv
       - restore_cache:
           keys: [backend-build]
-       - run:
+      - run:
           name: Run migrations
           #running and saving migration output
           command: |
